@@ -1,2 +1,15 @@
-*.class
-*.log
+logs
+target
+/.idea
+/.history
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/.sbtserver
+/RUNNING_PID
+/bin
+/libexec
+/project
+/conf
+.gitignore

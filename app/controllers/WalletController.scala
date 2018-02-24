@@ -57,17 +57,7 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
         walletsList.map { wallets =>
           val walletFromBase = wallets.head
           val currentBalance = walletFromBase.balance + wallet.balance
-          val modifier = Json.obj(
-            "$set" -> Json.obj(
-              "balance" -> JsNumber(currentBalance)
-            )
-          )
-          for {
-            collection <- walletsFuture
-            lastError <- collection.update(Json.obj("id" -> wallet.id), modifier)
-          } yield {
-            Logger.info(s"Successfully inserted with LastError: $lastError")
-          }
+          updateBalanceById(wallet.id, currentBalance)
           Accepted(Json.obj("currentBalance" -> currentBalance))
         }
       case JsError(errors) =>
@@ -93,17 +83,7 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
           val walletFromBase = wallets.head
           if ((walletFromBase.balance - wallet.balance) > 0) {
             val currentBalance = walletFromBase.balance - wallet.balance
-            val modifier = Json.obj(
-              "$set" -> Json.obj(
-                "balance" -> JsNumber(currentBalance)
-              )
-            )
-            for {
-              collection <- walletsFuture
-              lastError <- collection.update(Json.obj("id" -> wallet.id), modifier)
-            } yield {
-              Logger.info(s"Successfully inserted with LastError: $lastError")
-            }
+            updateBalanceById(wallet.id, currentBalance)
             Accepted(Json.obj("currentBalance" -> currentBalance))
           } else
             BadRequest(Json.obj("error" -> "Can't withdraw this sum!!!"))
@@ -146,6 +126,25 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
     // everything's ok! Let's reply with a JsValue
     walletsList.map { wallets =>
       Ok(Json.toJson(wallets))
+    }
+  }
+
+  /**
+    * Update balance by id
+    * @param id - wallet id
+    * @param currentBalance - balance for update
+    */
+  def updateBalanceById(id: String, currentBalance: Double): Unit = {
+    val modifier = Json.obj(
+      "$set" -> Json.obj(
+        "balance" -> JsNumber(currentBalance)
+      )
+    )
+    for {
+      collection <- walletsFuture
+      lastError <- collection.update(Json.obj("id" -> id), modifier)
+    } yield {
+      Logger.info(s"Successfully inserted with LastError: $lastError")
     }
   }
 

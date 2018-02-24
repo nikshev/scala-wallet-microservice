@@ -10,7 +10,7 @@ import play.modules.reactivemongo._
 import java.util.UUID.randomUUID
 
 import reactivemongo.api.ReadPreference
-import reactivemongo.play.json._
+import reactivemongo.play.json.{collection, _}
 import reactivemongo.play.json.collection._
 import utils.Errors
 
@@ -27,9 +27,49 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
 
   /**
     * Register new wallet
+    *
     * @return
     */
   def registerWallet = Action.async {
+    val id = randomUUID().toString
+    val wallet = Wallet(id, 0.0)
+    for {
+      wallets <- walletsFuture
+      lastError <- wallets.insert(wallet)
+    } yield
+      Created(Json.toJson(wallet))
+  }
+
+
+  def depositWallet = Action.async(parse.json) { request =>
+    Json.fromJson[Wallet](request.body) match {
+      case JsSuccess(wallet, _) =>
+        val walletsList = findById(wallet.id)
+        walletsList.map { wallets =>
+          val walletFromBase = wallets.head
+          val currentBalance = walletFromBase.balance + wallet.balance
+          val modifier = Json.obj(
+            // this modifier will set the fields
+            // 'updateDate', 'title', 'content', and 'publisher'
+            "$set" -> Json.obj(
+              "balance" -> JsNumber(currentBalance)
+            )
+          )
+          for {
+            collection <- walletsFuture
+            lastError <- collection.update(Json.obj("id" -> wallet.id), modifier)
+          } yield {
+            Logger.info(s"Successfully inserted with LastError: $lastError")
+          }
+          Accepted(Json.obj("currentBalance"->currentBalance))
+        }
+        //Future.successful(Accepted(Json.obj("currentBalance"->3333)))
+      case JsError(errors) =>
+        Future.successful(BadRequest("Can't create operation from the json provided. " + Errors.show(errors)))
+    }
+  }
+
+  def withdrawWallet = Action.async {
     val id = randomUUID().toString
     val wallet = Wallet(id,0.0)
     for {
@@ -38,7 +78,6 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
     } yield
       Ok(Json.toJson(wallet))
   }
-
 
   /**
     * Find wallet by id

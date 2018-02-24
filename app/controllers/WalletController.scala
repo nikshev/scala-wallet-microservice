@@ -41,16 +41,23 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
   }
 
 
-  def depositWallet = Action.async(parse.json) { request =>
+  /**
+    * Deposit money to wallet
+    *
+    * @return
+    *
+    * TO-DO for real life
+    * Deposit only after authentication
+    * Check balance in json (greater than zero and etc)
+    */
+  def depositMoney = Action.async(parse.json) { request =>
     Json.fromJson[Wallet](request.body) match {
       case JsSuccess(wallet, _) =>
-        val walletsList = findById(wallet.id)
+        val walletsList = findWalletById(wallet.id)
         walletsList.map { wallets =>
           val walletFromBase = wallets.head
           val currentBalance = walletFromBase.balance + wallet.balance
           val modifier = Json.obj(
-            // this modifier will set the fields
-            // 'updateDate', 'title', 'content', and 'publisher'
             "$set" -> Json.obj(
               "balance" -> JsNumber(currentBalance)
             )
@@ -61,50 +68,81 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
           } yield {
             Logger.info(s"Successfully inserted with LastError: $lastError")
           }
-          Accepted(Json.obj("currentBalance"->currentBalance))
+          Accepted(Json.obj("currentBalance" -> currentBalance))
         }
-        //Future.successful(Accepted(Json.obj("currentBalance"->3333)))
       case JsError(errors) =>
         Future.successful(BadRequest("Can't create operation from the json provided. " + Errors.show(errors)))
     }
   }
 
-  def withdrawWallet = Action.async {
-    val id = randomUUID().toString
-    val wallet = Wallet(id,0.0)
-    for {
-      wallets <- walletsFuture
-      lastError <- wallets.insert(wallet)
-    } yield
-      Ok(Json.toJson(wallet))
+
+  /**
+    * Withdraw money from wallet
+    *
+    * @return
+    *
+    * TO-DO for real life
+    * Deposit only after authentication
+    * Check balance in json (greater than zero and etc)
+    */
+  def withdrawMoney = Action.async(parse.json) { request =>
+    Json.fromJson[Wallet](request.body) match {
+      case JsSuccess(wallet, _) =>
+        val walletsList = findWalletById(wallet.id)
+        walletsList.map { wallets =>
+          val walletFromBase = wallets.head
+          if ((walletFromBase.balance - wallet.balance) > 0) {
+            val currentBalance = walletFromBase.balance - wallet.balance
+            val modifier = Json.obj(
+              "$set" -> Json.obj(
+                "balance" -> JsNumber(currentBalance)
+              )
+            )
+            for {
+              collection <- walletsFuture
+              lastError <- collection.update(Json.obj("id" -> wallet.id), modifier)
+            } yield {
+              Logger.info(s"Successfully inserted with LastError: $lastError")
+            }
+            Accepted(Json.obj("currentBalance" -> currentBalance))
+          } else
+            BadRequest(Json.obj("error" -> "Can't withdraw this sum!!!"))
+        }
+      case JsError(errors) =>
+        Future.successful(BadRequest("Can't create operation from the json provided. " + Errors.show(errors)))
+    }
   }
+
 
   /**
     * Find wallet by id
+    *
     * @param id - string UUID
     * @return
     */
-  def findById(id: String): Future[List[Wallet]] = {
+  def findWalletById(id: String): Future[List[Wallet]] = {
     // let's do our query
     val futureWalletsList: Future[List[Wallet]] = walletsFuture.flatMap {
       // find wallet with name `id`
       _.find(Json.obj("id" -> id)).
-      // perform the query and get a cursor of JsObject
-      cursor[Wallet](ReadPreference.primary).
-      // Coollect the results as a list
-      collect[List]()
+        // perform the query and get a cursor of JsObject
+        cursor[Wallet](ReadPreference.primary).
+        // Coollect the results as a list
+        collect[List]()
     }
 
     futureWalletsList
   }
 
+
   /**
     * Get balance objects by id
+    *
     * @param id - string UUID
     * @return
     */
-  def balanceById(id: String) = Action.async {
-    val walletsList = findById(id)
+  def getBalanceById(id: String) = Action.async {
+    val walletsList =findWalletById(id)
     // everything's ok! Let's reply with a JsValue
     walletsList.map { wallets =>
       Ok(Json.toJson(wallets))

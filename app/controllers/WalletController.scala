@@ -55,10 +55,13 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
       case JsSuccess(wallet, _) =>
         val walletsList = findWalletById(wallet.id)
         walletsList.map { wallets =>
-          val walletFromBase = wallets.head
-          val currentBalance = walletFromBase.balance + wallet.balance
-          updateBalanceById(wallet.id, currentBalance)
-          Accepted(Json.obj("currentBalance" -> currentBalance))
+          val walletFromBase = wallets.headOption.getOrElse(Wallet("",0.0))
+          if (walletFromBase.id != "") {
+            val currentBalance = walletFromBase.balance + wallet.balance
+            updateBalanceById(wallet.id, currentBalance)
+            Accepted(Json.obj("currentBalance" -> currentBalance))
+          }  else
+            BadRequest(Json.obj("error" -> "Can't deposit this sum!!!"))
         }
       case JsError(errors) =>
         Future.successful(BadRequest("Can't create operation from the json provided. " + Errors.show(errors)))
@@ -80,8 +83,8 @@ class WalletController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implici
       case JsSuccess(wallet, _) =>
         val walletsList = findWalletById(wallet.id)
         walletsList.map { wallets =>
-          val walletFromBase = wallets.head
-          if ((walletFromBase.balance - wallet.balance) > 0) {
+          val walletFromBase = wallets.headOption.getOrElse(Wallet("",0.0))
+          if (walletFromBase.id != "" && (walletFromBase.balance - wallet.balance) > 0) {
             val currentBalance = walletFromBase.balance - wallet.balance
             updateBalanceById(wallet.id, currentBalance)
             Accepted(Json.obj("currentBalance" -> currentBalance))

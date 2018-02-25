@@ -9,7 +9,9 @@ scalaVersion := "2.11.7"
 routesGenerator := InjectedRoutesGenerator
 
 libraryDependencies ++= Seq(
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.12"
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.12",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+  "org.specs2" %% "specs2-core" % "3.9.5" % "test"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

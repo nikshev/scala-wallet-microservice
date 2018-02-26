@@ -6,10 +6,8 @@ target
 /.classpath
 /.project
 /.settings
-/.sbtserver
 /RUNNING_PID
 /bin
 /libexec
-/project
 .gitignore
 *.ignore

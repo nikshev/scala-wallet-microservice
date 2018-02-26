@@ -1,0 +1,6 @@
+GET      /wallet/register           controllers.WalletController.registerWallet
+POST     /wallet/deposit            controllers.WalletController.depositMoney
+POST     /wallet/withdraw           controllers.WalletController.withdrawMoney
+GET      /wallet/balance            controllers.WalletController.getBalanceById(id: String)
+GET      /healthcheck               controllers.HealthCheckController.healthCheck
+

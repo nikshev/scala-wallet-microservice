@@ -1,0 +1,182 @@
+{
+	"id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+	"name": "Wallet collection",
+	"description": "Collection for wallet microservice",
+	"order": [
+		"3006391b-14c6-c1bd-3d81-359bb5a2cc53",
+		"7332387e-8650-8413-eced-ebfa24a5769e",
+		"f493fdf5-7972-dcd1-2ded-a62dcee89836",
+		"9db28d14-0564-4623-4163-645ad6a09026",
+		"248813b0-babf-d805-a546-660bfc63229f"
+	],
+	"folders": [],
+	"folders_order": [],
+	"timestamp": 1519646918662,
+	"owner": 0,
+	"public": false,
+	"events": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8f731b0c-35e8-4b23-befc-06b7a074d564",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "da3ac1e6-1da6-4232-8bf3-8d138b0f5dcc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variables": [],
+	"auth": null,
+	"requests": [
+		{
+			"id": "248813b0-babf-d805-a546-660bfc63229f",
+			"headers": "",
+			"headerData": [],
+			"url": "http://127.0.0.1:9000/healthcheck",
+			"queryParams": [],
+			"events": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"version": 2,
+			"auth": null,
+			"time": 1519451410113,
+			"name": "Health Check",
+			"description": "Health Check Request",
+			"collectionId": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"responses": [],
+			"collection_id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"currentHelper": null,
+			"helperAttributes": null
+		},
+		{
+			"id": "3006391b-14c6-c1bd-3d81-359bb5a2cc53",
+			"headers": "",
+			"headerData": [],
+			"url": "http://127.0.0.1:9000/wallet/register",
+			"queryParams": [],
+			"events": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"version": 2,
+			"auth": null,
+			"time": 1519391338054,
+			"name": "Register Wallet",
+			"description": "Register Wallet Request",
+			"collectionId": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"responses": [],
+			"collection_id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"currentHelper": null,
+			"helperAttributes": null
+		},
+		{
+			"id": "7332387e-8650-8413-eced-ebfa24a5769e",
+			"headers": "",
+			"headerData": [],
+			"url": "http://127.0.0.1:9000/wallet/balance?id=6ef84294-abda-4be7-964c-e4530e91a235",
+			"queryParams": [
+				{
+					"key": "id",
+					"value": "6ef84294-abda-4be7-964c-e4530e91a235",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				}
+			],
+			"events": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"version": 2,
+			"auth": null,
+			"time": 1519453586257,
+			"name": "Balance By Id",
+			"description": "Balance By Id Request",
+			"collectionId": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"responses": [],
+			"collection_id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"currentHelper": null,
+			"helperAttributes": null
+		},
+		{
+			"id": "9db28d14-0564-4623-4163-645ad6a09026",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://127.0.0.1:9000/wallet/withdraw",
+			"queryParams": [],
+			"events": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"auth": null,
+			"time": 1519473267087,
+			"name": "Withdraw Money From Wallet",
+			"description": "Withdraw Money From Wallet Request",
+			"collectionId": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"responses": [],
+			"collection_id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"rawModeData": "{\"id\":\"6ef84294-abda-4be7-964c-e4530e91a235\",\"balance\": 1.0}",
+			"currentHelper": null,
+			"helperAttributes": null
+		},
+		{
+			"id": "f493fdf5-7972-dcd1-2ded-a62dcee89836",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://127.0.0.1:9000/wallet/deposit",
+			"queryParams": [],
+			"events": [],
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"auth": null,
+			"time": 1519474203636,
+			"name": "Deposit Money To Wallet",
+			"description": "Deposit Money To Wallet Request",
+			"collectionId": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"responses": [],
+			"collection_id": "1e68b901-830d-c01f-57fa-6bc6434b1689",
+			"rawModeData": "{\"id\":\"6ef84294-abda-4be7-964c-e4530e91a235\",\"balance\": 10.0}",
+			"currentHelper": null,
+			"helperAttributes": null
+		}
+	]
+}
